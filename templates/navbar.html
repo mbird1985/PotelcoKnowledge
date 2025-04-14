@@ -1,0 +1,151 @@
+{% set current_year = '2025' %}
+<nav class="bg-orange-500 text-white shadow-md">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a class="text-xl font-bold" href="{{ url_for('system.dashboard') }}">Potelco Ops</a>
+      <button class="sm:hidden focus:outline-none" type="button" aria-controls="navLinks" aria-expanded="false" onclick="toggleNav()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+      <div class="hidden sm:flex sm:items-center sm:space-x-4" id="navLinks">
+        <ul class="flex space-x-4 items-center">
+          <!-- People Dropdown -->
+          <li class="relative group">
+            <a class="hover:bg-orange-600 px-3 py-2 rounded-md cursor-pointer flex items-center">
+              People
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </a>
+            <ul class="absolute transition-all duration-300 ease-out opacity-0 invisible group-hover:opacity-100 group-hover:visible bg-orange-500 text-white rounded-md shadow-lg mt-0 w-48 z-10">
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('users.people') }}">Users</a></li>
+            </ul>
+          </li>
+          <!-- Equipment Dropdown -->
+          <li class="relative group">
+            <a class="hover:bg-orange-600 px-3 py-2 rounded-md cursor-pointer flex items-center">
+              Equipment
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </a>
+            <ul class="absolute transition-all duration-300 ease-out opacity-0 invisible group-hover:opacity-100 group-hover:visible bg-orange-500 text-white rounded-md shadow-lg mt-0 w-48 z-10">
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('equipment.equipment_list') }}">Equipment</a></li>
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('inventory.inventory') }}">Inventory</a></li>
+            </ul>
+          </li>
+          <!-- Schedule Dropdown -->
+          <li class="relative group">
+            <a class="hover:bg-orange-600 px-3 py-2 rounded-md cursor-pointer flex items-center">
+              Schedule
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </a>
+            <ul class="absolute transition-all duration-300 ease-out opacity-0 invisible group-hover:opacity-100 group-hover:visible bg-orange-500 text-white rounded-md shadow-lg mt-0 w-48 z-10">
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('schedule.index') }}">Schedule</a></li>
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('towns.towns') }}">Towns</a></li>
+            </ul>
+          </li>
+          <!-- Documents Dropdown -->
+          <li class="relative group">
+            <a class="hover:bg-orange-600 px-3 py-2 rounded-md cursor-pointer flex items-center">
+              Documents
+              <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </a>
+            <ul class="absolute transition-all duration-300 ease-out opacity-0 invisible group-hover:opacity-100 group-hover:visible bg-orange-500 text-white rounded-md shadow-lg mt-0 w-48 z-10">
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('documents.document_list') }}">Documents</a></li>
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('email.email_templates') }}">Email Templates</a></li>
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('integration.integrate') }}">Integrate</a></li>
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('report.generate_report') }}">Reports</a></li>
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('serve_search') }}">Search</a></li>
+              <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('serve_upload') }}">Upload</a></li>
+            </ul>
+          </li>
+          <!-- Chat Link -->
+          <li><a class="hover:bg-orange-600 px-3 py-2 rounded-md" href="{{ url_for('chat.chat_interface') }}">Chat</a></li>
+        </ul>
+        <div class="ml-4">
+          {% if current_user.is_authenticated %}
+            <span>{{ current_user.username }} | <a href="{{ url_for('auth.logout') }}" class="text-yellow-300 hover:text-yellow-400">Logout</a></span>
+          {% else %}
+            <a href="{{ url_for('auth.login') }}" class="hover:text-gray-200">Login</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sm:hidden hidden" id="mobileNav">
+    <ul class="px-4 py-2 space-y-2">
+      <!-- People Section -->
+      <li>
+        <a class="block hover:bg-orange-600 px-3 py-2 rounded-md font-semibold">People</a>
+        <ul class="pl-4 space-y-1">
+          <li><a class="block hover:bg-orange-600 px-3 py-2 rounded-md" href="{{ url_for('users.people') }}">Users</a></li>
+        </ul>
+      </li>
+      <!-- Equipment Section -->
+      <li>
+        <a class="block hover:bg-orange-600 px-3 py-2 rounded-md font-semibold">Equipment</a>
+        <ul class="pl-4 space-y-1">
+          <li><a class="block hover:bg-orange-600 px-3 py-2 rounded-md" href="{{ url_for('equipment.equipment_list') }}">Equipment</a></li>
+          <li><a class="block hover:bg-orange-600 px-3 py-2 rounded-md" href="{{ url_for('inventory.inventory') }}">Inventory</a></li>
+        </ul>
+      </li>
+      <!-- Schedule Section -->
+      <li>
+        <a class="block hover:bg-orange-600 px-3 py-2 rounded-md font-semibold">Schedule</a>
+        <ul class="pl-4 space-y-1">
+          <li><a class="block hover:bg-orange-600 px-3 py-2 rounded-md" href="{{ url_for('schedule.index') }}">Schedule</a></li>
+          <li><a class="block hover:bg-orange-600 px-3 py-2 rounded-md" href="{{ url_for('towns.towns') }}">Towns</a></li>
+        </ul>
+      </li>
+      <!-- Documents Section -->
+      <li>
+        <a class="block hover:bg-orange-600 px-3 py-2 rounded-md font-semibold">Documents</a>
+        <ul class="pl-4 space-y-1">
+          <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('documents.document_list') }}">Documents</a></li>
+          <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('email.email_templates') }}">Email Templates</a></li>
+          <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('integration.integrate') }}">Integrate</a></li>
+          <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('report.generate_report') }}">Reports</a></li>
+          <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('serve_search') }}">Search</a></li>
+          <li><a class="block hover:bg-orange-600 px-4 py-2 rounded-md" href="{{ url_for('serve_upload') }}">Upload</a></li>
+        </ul>
+      </li>
+      <!-- Chat Link -->
+      <li><a class="block hover:bg-orange-600 px-3 py-2 rounded-md" href="{{ url_for('chat.chat_interface') }}">Chat</a></li>
+      <!-- Authentication -->
+      <li>
+        {% if current_user.is_authenticated %}
+          <span>{{ current_user.username }} | <a href="{{ url_for('auth.logout') }}" class="text-yellow-300 hover:text-yellow-400">Logout</a></span>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="block hover:text-gray-200">Login</a>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+</nav>
+<script>
+  function toggleNav() {
+    const nav = document.getElementById('mobileNav');
+    nav.classList.toggle('hidden');
+  }
+</script>
+<style>
+  /* Custom CSS for dropdown delay */
+  .group-hover\:visible {
+    transition-delay: 0ms; /* Show immediately on hover */
+  }
+  .group:not(:hover) .group-hover\:visible {
+    transition-delay: 300ms; /* Delay hiding by 300ms */
+  }
+  .group-hover\:opacity-100 {
+    transition-delay: 0ms; /* Show immediately */
+  }
+  .group:not(:hover) .group-hover\:opacity-100 {
+    transition-delay: 300ms; /* Delay fading out */
+  }
+</style>

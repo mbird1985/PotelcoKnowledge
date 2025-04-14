@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-6">
+  <h2 class="text-2xl font-semibold text-teal-800">Edit User</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p class="text-orange-500 text-center">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
+
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <form method="POST" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-teal-800 font-medium">Username:</label>
+          <input type="text" name="username" value="{{ user.username }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" required>
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Full Name:</label>
+          <input type="text" name="full_name" value="{{ user.full_name }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Email:</label>
+          <input type="email" name="email" value="{{ user.email }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" required>
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Job Title:</label>
+          <input type="text" name="job_title" value="{{ user.job_title }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Role:</label>
+          <select name="role" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+            <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+            <option value="manager" {% if user.role == 'manager' %}selected{% endif %}>Manager</option>
+            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Password (leave blank to keep current):</label>
+          <input type="password" name="password" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-xl font-semibold text-teal-800 mb-4">Certifications</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {% for cert in all_certs %}
+            <label class="flex items-center">
+              <input type="checkbox" name="certifications" id="cert_{{ cert.id }}" value="{{ cert.name }}" {% if cert.name in user_certs %}checked{% endif %} class="mr-2">
+              <span>{{ cert.name|capitalize }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        <div class="mt-4">
+          <label class="block text-teal-800 font-medium">Add New Certification:</label>
+          <input name="new_cert" id="new_cert" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" placeholder="Enter a new certification name">
+        </div>
+        <div class="flex gap-2 mt-2">
+          <button type="button" onclick="addCertification()" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600">Add</button>
+          <button type="button" onclick="removeCertification()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Remove</button>
+        </div>
+        <ul id="certifications_list" class="mt-2 space-y-1">
+          {% for cert in user.certifications %}
+            <li class="text-gray-700">{{ cert }}</li>
+          {% endfor %}
+        </ul>
+        <input type="hidden" name="certifications" id="certifications_hidden" value="{{ user.certifications | tojson }}">
+      </div>
+
+      <div class="flex justify-center gap-4">
+        <button type="submit" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600">Save Changes</button>
+        <a href="/people" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function addCertification() {
+    const input = document.getElementById('new_cert');
+    const certList = document.getElementById('certifications_list');
+    const cert = input.value.trim();
+    if (cert && !Array.from(certList.children).some(li => li.textContent === cert)) {
+      const li = document.createElement('li');
+      li.textContent = cert;
+      li.className = 'text-gray-700';
+      certList.appendChild(li);
+      input.value = '';
+      updateHiddenInput();
+    }
+  }
+
+  function removeCertification() {
+    const input = document.getElementById('new_cert');
+    const certList = document.getElementById('certifications_list');
+    const cert = input.value.trim();
+    const items = certList.getElementsByTagName('li');
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].textContent === cert) {
+        certList.removeChild(items[i]);
+        input.value = '';
+        updateHiddenInput();
+        break;
+      }
+    }
+  }
+
+  function updateHiddenInput() {
+    const certList = document.getElementById('certifications_list');
+    const certs = Array.from(certList.getElementsByTagName('li')).map(li => li.textContent);
+    document.getElementById('certifications_hidden').value = JSON.stringify(certs);
+  }
+</script>
+{% endblock %}

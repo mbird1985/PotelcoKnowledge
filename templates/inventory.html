@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-6">
+  <h2 class="text-2xl font-semibold text-teal-800">Inventory</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p class="text-orange-500 text-center">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
+
+  {% if can_edit %}
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold text-teal-800 mb-4">Add New Item</h3>
+    <form method="POST" action="{{ url_for('inventory.add_inventory') }}" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-teal-800 font-medium">Name:</label>
+          <input type="text" name="name" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Location:</label>
+          <input type="text" name="location" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Quantity:</label>
+          <input type="number" name="quantity" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Supplier:</label>
+          <input type="text" name="supplier" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Serial Numbers (JSON):</label>
+          <input type="text" name="serial_numbers" placeholder='["SN1", "SN2"]' class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Unit:</label>
+          <input type="text" name="unit" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Reorder Threshold:</label>
+          <input type="number" name="reorder_threshold" required class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+      </div>
+      <div class="mt-4 flex justify-center">
+        <button type="submit" name="add_item" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600">Add Item</button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold text-teal-800 mb-4">Current Inventory</h3>
+    <table class="w-full border-collapse">
+      <thead class="bg-teal-800 text-white">
+        <tr>
+          <th class="p-3 text-left">ID</th>
+          <th class="p-3 text-left">Name</th>
+          <th class="p-3 text-left">Location</th>
+          <th class="p-3 text-left">Quantity</th>
+          <th class="p-3 text-left">Supplier</th>
+          <th class="p-3 text-left">Serial Numbers</th>
+          <th class="p-3 text-left">Unit</th>
+          {% if can_edit %}
+          <th class="p-3 text-left">Receive New</th>
+          <th class="p-3 text-left">Remove</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in inventory %}
+        <tr class="border-b hover:bg-gray-50">
+          <td class="p-3">{{ item.id }}</td>
+          <td class="p-3">{{ item.name }}</td>
+          <td class="p-3">{{ item.location or 'N/A' }}</td>
+          <td class="p-3">{{ item.quantity }}</td>
+          <td class="p-3">{{ item.supplier or 'N/A' }}</td>
+          <td class="p-3">{{ item.serial_numbers | join(', ') if item.serial_numbers else 'None' }}</td>
+          <td class="p-3">{{ item.unit or 'N/A' }}</td>
+          {% if can_edit %}
+          <td class="p-3">
+            <form method="POST" action="{{ url_for('inventory.inventory') }}" class="flex items-center gap-2">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="number" name="additional_quantity" min="1" class="w-20 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" placeholder="Qty">
+              <button type="submit" name="update_quantity" class="bg-teal-500 text-white px-3 py-1 rounded-lg hover:bg-teal-600">Add</button>
+            </form>
+          </td>
+          <td class="p-3">
+            <form method="POST" action="{{ url_for('inventory.inventory') }}" class="flex items-center gap-2">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <input type="number" name="reduce_quantity" min="1" class="w-20 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" placeholder="Qty">
+              <button type="submit" name="reduce_quantity" class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600">Remove</button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

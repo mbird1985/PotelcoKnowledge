@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-semibold text-teal-800 mb-4">Documents</h2>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p class="text-orange-500 mb-4">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
+  <table class="w-full border-collapse">
+    <thead class="bg-teal-800 text-white">
+      <tr>
+        <th class="p-3 text-left">Title</th>
+        <th class="p-3 text-left">Category</th>
+        <th class="p-3 text-left">Version</th>
+        <th class="p-3 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in documents %}
+      <tr class="border-b hover:bg-gray-50">
+        <td class="p-3">{{ doc.title }}</td>
+        <td class="p-3">{{ doc.category }}</td>
+        <td class="p-3">{{ doc.version }}</td>
+        <td class="p-3 flex space-x-2">
+          <a href="{{ doc.url }}" target="_blank" class="text-teal-500 hover:underline">View</a>
+          <a href="/edit_document/{{ doc.id }}" class="text-orange-500 hover:underline">Edit</a>
+          <a href="/delete_document/{{ doc.id }}" onclick="return confirm('Are you sure?')" class="text-red-500 hover:underline">Delete</a>
+          <a href="/versions/{{ doc.title }}" class="text-teal-500 hover:underline">Versions</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

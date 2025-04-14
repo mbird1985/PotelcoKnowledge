@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-6">
+  <h2 class="text-2xl font-semibold text-teal-800">People</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p class="text-orange-500 text-center">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
+
+  {% if can_edit %}
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold text-teal-800 mb-4">Add New User</h3>
+    <form method="POST" action="/users/add_user" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-teal-800 font-medium">Username:</label>
+          <input type="text" name="username" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" required>
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Full Name:</label>
+          <input type="text" name="full_name" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Email:</label>
+          <input type="email" name="email" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" required>
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Job Title:</label>
+          <input type="text" name="job_title" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Role:</label>
+          <select name="role" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+            <option value="user">User</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Password:</label>
+          <input type="password" name="password" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" required>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-center">
+        <button type="submit" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600">Add User</button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+
+  <div class="flex items-center space-x-4 mb-4">
+    {% if selected_role != "all" %}
+    <a href="{{ url_for('users.people') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Clear Filter</a>
+    {% endif %}
+    <form method="get" action="{{ url_for('users.people') }}">
+      <label for="role_filter" class="text-teal-800 font-medium">Filter by role:</label>
+      <select name="role" id="role_filter" onchange="this.form.submit()" class="ml-2 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        <option value="" {% if selected_role == "all" %}selected{% endif %}>All</option>
+        <option value="admin" {% if selected_role == "admin" %}selected{% endif %}>Admin</option>
+        <option value="manager" {% if selected_role == "manager" %}selected{% endif %}>Manager</option>
+        <option value="crew" {% if selected_role == "crew" %}selected{% endif %}>Crew</option>
+      </select>
+    </form>
+  </div>
+
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold text-teal-800 mb-4">Users List</h3>
+    <table class="w-full border-collapse">
+      <thead class="bg-teal-800 text-white">
+        <tr>
+          <th class="p-3 text-left">Username</th>
+          <th class="p-3 text-left">Full Name</th>
+          <th class="p-3 text-left">Email</th>
+          <th class="p-3 text-left">Job Title</th>
+          <th class="p-3 text-left">Role</th>
+          <th class="p-3 text-left">Certifications</th>
+          {% if can_edit %}
+          <th class="p-3 text-left">Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr class="border-b hover:bg-gray-50">
+          <td class="p-3">{{ user.username }}</td>
+          <td class="p-3">{{ user.full_name or 'N/A' }}</td>
+          <td class="p-3">{{ user.email }}</td>
+          <td class="p-3">{{ user.job_title or 'N/A' }}</td>
+          <td class="p-3">
+            <span class="inline-block px-2 py-1 text-sm rounded
+              {% if user.role == 'admin' %}bg-red-600 text-white
+              {% elif user.role == 'manager' %}bg-purple-600 text-white
+              {% else %}bg-gray-500 text-white{% endif %}">
+              {{ user.role|capitalize }}
+            </span>
+          </td>
+          <td class="p-3">
+            {% for cert in user.certifications_display %}
+              <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-1 px-2.5 py-0.5 rounded">
+                {{ cert }}
+              </span>
+            {% else %}
+              <span class="text-gray-400 text-sm">None</span>
+            {% endfor %}
+          </td>
+          {% if can_edit %}
+          <td class="p-3">
+            <a href="/users/edit_user/{{ user.id }}" class="bg-orange-500 text-white px-3 py-1 rounded-lg hover:bg-orange-600">Edit</a>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

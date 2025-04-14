@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-6">
+  <h2 class="text-2xl font-semibold text-teal-800">Inventory Detail - {{ item.name }}</h2>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <p class="text-orange-500 text-center">{{ messages[0] }}</p>
+    {% endif %}
+  {% endwith %}
+
+  {% if can_edit %}
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <form method="POST" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-teal-800 font-medium">Name:</label>
+          <input type="text" name="name" value="{{ item.name }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500" required>
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Location:</label>
+          <input type="text" name="location" value="{{ item.location }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Quantity:</label>
+          <input type="number" name="quantity" value="{{ item.quantity }}" min="0" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Supplier:</label>
+          <input type="text" name="supplier" value="{{ item.supplier }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Serial Numbers (JSON):</label>
+          <input type="text" name="serial_numbers" value='{{ item.serial_numbers | tojson if item.serial_numbers else "" }}' placeholder='["SN1", "SN2"]' class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+        <div>
+          <label class="block text-teal-800 font-medium">Unit:</label>
+          <input type="text" name="unit" value="{{ item.unit }}" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500">
+        </div>
+      </div>
+      <div class="flex justify-center gap-4">
+        <button type="submit" name="update_item" class="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600">Update</button>
+        <button type="submit" name="delete_item" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete</button>
+      </div>
+    </form>
+  </div>
+  {% else %}
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold text-teal-800 mb-4">Details</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p><strong>Name:</strong> {{ item.name }}</p>
+      <p><strong>Location:</strong> {{ item.location }}</p>
+      <p><strong>Quantity:</strong> {{ item.quantity }} {{ item.unit }}</p>
+      <p><strong>Supplier:</strong> {{ item.supplier }}</p>
+      <p><strong>Serial Numbers:</strong> {{ item.serial_numbers | join(", ") if item.serial_numbers else "N/A" }}</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
